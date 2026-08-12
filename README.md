@@ -1,32 +1,54 @@
 # Haven
 
-Eine ruhige, mehrsprachige Startseite für einen zukünftigen menschlichen Chat-Support.
+Professionelle, dreisprachige Plattform für vertrauliche Gespräche mit echten Moderatoren.
 
-## Aktueller Stand
+## Enthalten
 
-- Englisch, Deutsch und Arabisch
-- Automatischer Rechts-nach-links-Modus für Arabisch
-- Ruhiges, responsives Design für Handy und Computer
-- Einfache Chat-Demo
-- Sichtbarer Krisen- und Notfallhinweis
-- Der gesamte Code befindet sich verständlich in `index.html`
+- Vite 8 und Supabase Auth/Realtime
+- Gastzugang über anonyme Supabase-Konten
+- Registrierung und Login per E-Mail
+- Deutsch, Englisch und Arabisch mit RTL-Layout
+- Private Warteschlange und Moderator-Dashboard
+- Echtzeit-Nachrichten und Row Level Security
+- Responsives Design und sichtbare Krisenhinweise
 
-## Lokal ansehen
+## Lokal starten
 
-`index.html` herunterladen und im Browser öffnen.
+```bash
+npm install
+cp .env.example .env
+npm run dev
+```
 
-## Wichtig
+## Supabase einmalig einrichten
 
-Der Chat ist momentan nur eine Demo und noch nicht mit echten Support-Mitarbeitern verbunden.
+1. Ein Supabase-Projekt erstellen.
+2. `supabase/schema.sql` vollständig im **SQL Editor** ausführen.
+3. Unter **Authentication → Sign In / Providers → Anonymous** anonyme Logins aktivieren.
+4. Project URL und öffentlichen Publishable-/Anon-Key in `.env` eintragen:
 
-Vor einer echten Veröffentlichung brauchen wir später unter anderem:
+```env
+VITE_SUPABASE_URL=https://DEIN-PROJEKT.supabase.co
+VITE_SUPABASE_ANON_KEY=DEIN_OEFFENTLICHER_KEY
+```
 
-- sicheren Server und Datenbank
-- Anmeldung für Nutzer und Support-Mitarbeiter
-- echten Live-Chat
-- Datenschutz, Einwilligung und Löschregeln
-- geschultes Support-Team und Krisenablauf
-- länderspezifische Hilfsangebote
-- rechtliche und technische Sicherheitsprüfung
+5. Einen Account über die Website registrieren und dessen UUID unter **Authentication → Users** kopieren.
+6. Diesen Account im SQL Editor zum Moderator machen:
 
-Diese Version ist kein medizinischer Dienst, keine Therapie und kein Notfalldienst.
+```sql
+update public.profiles set role = 'moderator' where id = 'USER_UUID';
+```
+
+Danach kann sich der Moderator anmelden, wartende Gespräche übernehmen und live antworten.
+
+## Produktionsbuild
+
+```bash
+npm run build
+```
+
+## Vor öffentlichem Betrieb
+
+Zusätzlich notwendig sind geschulte Moderatoren, feste Dienstzeiten, ein Krisen- und Eskalationsablauf, Datenschutzinformation, Nutzungsbedingungen, Löschfristen, Missbrauchsschutz, länderspezifische Krisenkontakte sowie eine rechtliche und technische Sicherheitsprüfung.
+
+Haven ist keine Therapie, medizinische Behandlung oder Notfallhilfe.
