@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A calm place to talk with a real person.">
+  <title>Haven — You are not alone</title>
+  <style>
+    :root {
+      --ink: #263a34;
+      --muted: #65756f;
+      --cream: #f7f3eb;
+      --paper: #fffdf8;
+      --green: #537468;
+      --light-green: #dce8e1;
+      --line: #d8ded9;
+      --danger: #75423f;
+      --danger-bg: #f4e4df;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--cream);
+      font-family: Arial, sans-serif;
+      line-height: 1.65;
+    }
+
+    body.locked { overflow: hidden; }
+
+    button, select, textarea { font: inherit; }
+
+    button, a { cursor: pointer; }
+
+    .emergency {
+      min-height: 42px;
+      padding: 8px 5%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      color: var(--danger);
+      background: var(--danger-bg);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .link-button {
+      padding: 0;
+      color: inherit;
+      background: none;
+      border: 0;
+      border-bottom: 1px solid;
+      font-weight: bold;
+    }
+
+    header {
+      max-width: 1160px;
+      margin: auto;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--green);
+      border-radius: 50%;
+      font-family: Georgia, serif;
+      font-weight: normal;
+    }
+
+    nav { display: flex; gap: 28px; }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    select {
+      padding: 9px 13px;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+    }
+
+    .hero {
+      max-width: 1160px;
+      min-height: 650px;
+      margin: auto;
+      padding: 75px 24px 100px;
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      align-items: center;
+      gap: 8vw;
+    }
+
+    .label {
+      margin: 0 0 12px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    h1, h2 {
+      margin: 0 0 20px;
+      font-family: Georgia, serif;
+      font-weight: normal;
+      line-height: 1.08;
+      letter-spacing: -1px;
+    }
+
+    h1 { font-size: clamp(44px, 6vw, 78px); }
+
+    h2 { font-size: clamp(34px, 4vw, 54px); }
+
+    h3 { margin: 0 0 8px; font-size: 17px; }
+
+    .lead {
+      max-width: 610px;
+      margin: 0 0 30px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 11px;
+    }
+
+    .primary, .secondary {
+      min-height: 50px;
+      padding: 13px 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 99px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .primary {
+      color: white;
+      background: var(--green);
+      border: 1px solid var(--green);
+    }
+
+    .primary:hover { background: #405f54; }
+
+    .secondary {
+      color: var(--ink);
+      background: transparent;
+      border: 1px solid var(--line);
+    }
+
+    .trust {
+      margin: 26px 0 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 24px;
+      color: var(--muted);
+      list-style: none;
+      font-size: 14px;
+    }
+
+    .trust li::before {
+      content: "•";
+      margin-inline-end: 8px;
+      color: var(--green);
+    }
+
+    .comfort {
+      min-height: 460px;
+      padding: 42px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: var(--light-green);
+      border-radius: 48% 52% 44% 56% / 43% 42% 58% 57%;
+      box-shadow: 0 25px 70px rgba(54, 80, 69, 0.12);
+    }
+
+    .sun {
+      width: 240px;
+      height: 240px;
+      position: absolute;
+      top: -35px;
+      right: -5px;
+      border: 1px solid rgba(83, 116, 104, 0.25);
+      border-radius: 50%;
+      box-shadow: 0 0 0 55px rgba(255, 255, 255, 0.25);
+    }
+
+    blockquote {
+      max-width: 360px;
+      margin: 0 0 25px;
+      position: relative;
+      font: 30px/1.35 Georgia, serif;
+    }
+
+    .helper {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .avatar {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--green);
+      border-radius: 50%;
+    }
+
+    .section {
+      max-width: 1160px;
+      margin: auto;
+      padding: 100px 24px;
+    }
+
+    .section > h2 { max-width: 680px; }
+
+    .cards {
+      margin-top: 42px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .cards article {
+      min-height: 245px;
+      padding: 29px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 23px;
+    }
+
+    .number {
+      width: 42px;
+      height: 42px;
+      margin-bottom: auto;
+      display: grid;
+      place-items: center;
+      color: var(--green);
+      background: var(--light-green);
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .cards p { margin: 0; color: var(--muted); }
+
+    .safety {
+      max-width: 1110px;
+      margin: auto;
+      padding: 65px;
+      display: grid;
+      grid-template-columns: 1fr 0.9fr;
+      gap: 75px;
+      background: #e7ede7;
+      border-radius: 32px;
+    }
+
+    .safety-text { color: var(--muted); }
+
+    .promises {
+      margin: 0;
+      padding: 0;
+      display: grid;
+      align-content: center;
+      gap: 23px;
+      list-style: none;
+    }
+
+    .promises li {
+      display: grid;
+      grid-template-columns: 31px 1fr;
+      gap: 12px;
+    }
+
+    .check {
+      width: 27px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--green);
+      border-radius: 50%;
+      font-size: 12px;
+    }
+
+    .promises strong, .promises small { display: block; }
+
+    .promises small { color: var(--muted); }
+
+    .closing {
+      max-width: 760px;
+      margin: auto;
+      padding: 130px 24px;
+      text-align: center;
+    }
+
+    footer {
+      max-width: 1160px;
+      margin: auto;
+      padding: 35px 24px 50px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 25px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    footer p { margin: 0; }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      padding: 18px;
+      display: grid;
+      place-items: center;
+      background: rgba(25, 46, 40, 0.6);
+      backdrop-filter: blur(5px);
+    }
+
+    .overlay[hidden] { display: none; }
+
+    .modal {
+      width: min(100%, 650px);
+      max-height: calc(100vh - 36px);
+      padding: 28px;
+      position: relative;
+      overflow: auto;
+      background: var(--paper);
+      border-radius: 25px;
+      box-shadow: 0 24px 70px rgba(29, 48, 41, 0.3);
+    }
+
+    .close {
+      width: 42px;
+      height: 42px;
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      color: var(--ink);
+      background: var(--cream);
+      border: 0;
+      border-radius: 50%;
+      font-size: 28px;
+    }
+
+    .demo {
+      padding: 10px 13px;
+      color: #735c34;
+      background: #f7edcf;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
+    .messages {
+      min-height: 240px;
+      padding: 18px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .message {
+      max-width: 82%;
+      margin: 0;
+      padding: 12px 15px;
+      border-radius: 16px;
+    }
+
+    .support {
+      align-self: flex-start;
+      background: var(--light-green);
+    }
+
+    .user {
+      align-self: flex-end;
+      color: white;
+      background: var(--green);
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 9px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 13px 15px;
+      resize: vertical;
+      color: var(--ink);
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: 15px;
+    }
+
+    .crisis-note {
+      padding: 14px;
+      color: var(--danger);
+      background: var(--danger-bg);
+      border-radius: 12px;
+    }
+
+    html[dir="rtl"] body,
+    html[dir="rtl"] h1,
+    html[dir="rtl"] h2,
+    html[dir="rtl"] blockquote {
+      font-family: Tahoma, Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    html[dir="rtl"] .close { right: auto; left: 22px; }
+
+    @media (max-width: 800px) {
+      nav { display: none; }
+      .hero { min-height: auto; grid-template-columns: 1fr; }
+      .cards { grid-template-columns: 1fr; }
+      .cards article { min-height: 210px; }
+      .safety {
+        margin: 0 18px;
+        padding: 45px 28px;
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      footer { grid-template-columns: 1fr; text-align: center; }
+      footer .logo { justify-content: center; }
+    }
+
+    @media (max-width: 520px) {
+      .emergency {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 1px;
+        text-align: start;
+      }
+      header { padding-inline: 18px; }
+      .hero, .section { padding-inline: 18px; }
+      .actions { flex-direction: column; }
+      .actions > * { width: 100%; }
+      .comfort { min-height: 350px; padding: 29px; }
+      .modal { padding: 21px; }
+      form { grid-template-columns: 1fr; }
+      form .primary { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="emergency">
+    <span data-key="emergency">In immediate danger? Call your local emergency service.</span>
+    <button class="link-button" id="openCrisis" data-key="crisis">Crisis help</button>
+  </aside>
+
+  <header>
+    <a class="logo" href="#top"><span class="logo-mark">H</span> Haven</a>
+    <nav>
+      <a href="#how" data-key="howLink">How it works</a>
+      <a href="#safety" data-key="safetyLink">Safety</a>
+    </nav>
+    <select id="language" aria-label="Language">
+      <option value="en">English</option>
+      <option value="de">Deutsch</option>
+      <option value="ar">العربية</option>
+    </select>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div>
+        <p class="label" data-key="label">A quiet place to talk</p>
+        <h1 data-key="title">You do not have to carry this alone.</h1>
+        <p class="lead" data-key="intro">When life feels heavy, talk privately with a real person from our support team. No judgement and no pressure.</p>
+        <div class="actions">
+          <button class="primary open-chat" data-key="start">Start a conversation</button>
+          <a class="secondary" href="#how" data-key="learn">See how it works</a>
+        </div>
+        <ul class="trust">
+          <li data-key="human">Real human support</li>
+          <li data-key="private">Private by design</li>
+          <li data-key="languages">3 languages</li>
+        </ul>
+      </div>
+
+      <div class="comfort">
+        <div class="sun"></div>
+        <blockquote data-key="quote">“Take your time. You can begin wherever feels easiest.”</blockquote>
+        <p class="helper"><span class="avatar">M</span><strong data-key="helper">Maya, support team</strong></p>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <p class="label" data-key="simple">Simple and human</p>
+      <h2 data-key="stepsTitle">Support in three gentle steps</h2>
+      <div class="cards">
+        <article>
+          <span class="number">01</span>
+          <h3 data-key="step1">Choose your language</h3>
+          <p data-key="step1Text">Use English, German or Arabic.</p>
+        </article>
+        <article>
+          <span class="number">02</span>
+          <h3 data-key="step2">Tell us what you need</h3>
+          <p data-key="step2Text">Share as much or as little as you want.</p>
+        </article>
+        <article>
+          <span class="number">03</span>
+          <h3 data-key="step3">Talk with a person</h3>
+          <p data-key="step3Text">A support team member joins your private chat.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="safety" id="safety">
+      <div>
+        <p class="label" data-key="safetyLabel">Your safety matters</p>
+        <h2 data-key="safetyTitle">Clear limits build trust.</h2>
+        <p class="safety-text" data-key="safetyText">Haven is for supportive conversations. It is not emergency care, medical treatment or a replacement for a licensed professional.</p>
+      </div>
+      <ul class="promises">
+        <li><span class="check">✓</span><div><strong data-key="pace">Your pace</strong><small data-key="paceText">You decide what to share.</small></div></li>
+        <li><span class="check">✓</span><div><strong data-key="honest">Honest information</strong><small data-key="honestText">We explain what the service can and cannot do.</small></div></li>
+        <li><span class="check">✓</span><div><strong data-key="connection">Human connection</strong><small data-key="connectionText">People answer messages, not bots.</small></div></li>
+      </ul>
+    </section>
+
+    <section class="closing">
+      <p class="label" data-key="smallStep">One small step is enough</p>
+      <h2 data-key="closing">You can start with just one sentence.</h2>
+      <button class="primary open-chat" data-key="start">Start a conversation</button>
+    </section>
+  </main>
+
+  <footer>
+    <a class="logo" href="#top"><span class="logo-mark">H</span> Haven</a>
+    <p data-key="footer">Human support for difficult moments.</p>
+    <small data-key="notMedical">Not an emergency or medical service.</small>
+  </footer>
+
+  <div class="overlay" id="chat" hidden>
+    <section class="modal" role="dialog" aria-modal="true">
+      <button class="close" data-close aria-label="Close">×</button>
+      <p class="label" data-key="conversation">Conversation</p>
+      <h2 data-key="chatTitle">How are you feeling right now?</h2>
+      <p class="demo" data-key="demo">Demo only — live human support is not connected yet.</p>
+      <div class="messages" id="messages">
+        <p class="message support" data-key="welcome">Welcome. Take your time. What would feel helpful to talk about?</p>
+      </div>
+      <form id="chatForm">
+        <textarea id="message" rows="2" required data-placeholder="placeholder" placeholder="Write what is on your mind..."></textarea>
+        <button class="primary" data-key="send">Send</button>
+      </form>
+    </section>
+  </div>
+
+  <div class="overlay" id="crisisModal" hidden>
+    <section class="modal" role="dialog" aria-modal="true">
+      <button class="close" data-close aria-label="Close">×</button>
+      <p class="label" data-key="urgent">Urgent support</p>
+      <h2 data-key="crisisTitle">If you are in immediate danger</h2>
+      <p data-key="crisisText">Contact your local emergency service now or go to the nearest emergency department. In the European Union call 112. In the USA or Canada call or text 988 for crisis support.</p>
+      <p class="crisis-note" data-key="stay">If possible, stay with someone you trust while you get help.</p>
+      <button class="primary" data-close data-key="understand">I understand</button>
+    </section>
+  </div>
+
+  <script>
+    const translations = {
+      en: {
+        emergency: "In immediate danger? Call your local emergency service.",
+        crisis: "Crisis help",
+        howLink: "How it works",
+        safetyLink: "Safety",
+        label: "A quiet place to talk",
+        title: "You do not have to carry this alone.",
+        intro: "When life feels heavy, talk privately with a real person from our support team. No judgement and no pressure.",
+        start: "Start a conversation",
+        learn: "See how it works",
+        human: "Real human support",
+        private: "Private by design",
+        languages: "3 languages",
+        quote: "“Take your time. You can begin wherever feels easiest.”",
+        helper: "Maya, support team",
+        simple: "Simple and human",
+        stepsTitle: "Support in three gentle steps",
+        step1: "Choose your language",
+        step1Text: "Use English, German or Arabic.",
+        step2: "Tell us what you need",
+        step2Text: "Share as much or as little as you want.",
+        step3: "Talk with a person",
+        step3Text: "A support team member joins your private chat.",
+        safetyLabel: "Your safety matters",
+        safetyTitle: "Clear limits build trust.",
+        safetyText: "Haven is for supportive conversations. It is not emergency care, medical treatment or a replacement for a licensed professional.",
+        pace: "Your pace",
+        paceText: "You decide what to share.",
+        honest: "Honest information",
+        honestText: "We explain what the service can and cannot do.",
+        connection: "Human connection",
+        connectionText: "People answer messages, not bots.",
+        smallStep: "One small step is enough",
+        closing: "You can start with just one sentence.",
+        footer: "Human support for difficult moments.",
+        notMedical: "Not an emergency or medical service.",
+        conversation: "Conversation",
+        chatTitle: "How are you feeling right now?",
+        demo: "Demo only — live human support is not connected yet.",
+        welcome: "Welcome. Take your time. What would feel helpful to talk about?",
+        placeholder: "Write what is on your mind...",
+        send: "Send",
+        reply: "Thank you for sharing. This demo cannot send your message to a support person yet.",
+        urgent: "Urgent support",
+        crisisTitle: "If you are in immediate danger",
+        crisisText: "Contact your local emergency service now or go to the nearest emergency department. In the European Union call 112. In the USA or Canada call or text 988 for crisis support.",
+        stay: "If possible, stay with someone you trust while you get help.",
+        understand: "I understand"
+      },
+      de: {
+        emergency: "In unmittelbarer Gefahr? Rufe jetzt den örtlichen Notdienst.",
+        crisis: "Krisenhilfe",
+        howLink: "So funktioniert es",
+        safetyLink: "Sicherheit",
+        label: "Ein ruhiger Ort zum Reden",
+        title: "Du musst das nicht allein tragen.",
+        intro: "Wenn das Leben schwerfällt, sprich vertraulich mit einem echten Menschen aus unserem Support-Team. Ohne Urteil und ohne Druck.",
+        start: "Gespräch beginnen",
+        learn: "So funktioniert es",
+        human: "Echte menschliche Hilfe",
+        private: "Vertraulich gedacht",
+        languages: "3 Sprachen",
+        quote: "„Nimm dir Zeit. Beginne dort, wo es sich am leichtesten anfühlt.“",
+        helper: "Maya, Support-Team",
+        simple: "Einfach und menschlich",
+        stepsTitle: "Unterstützung in drei ruhigen Schritten",
+        step1: "Wähle deine Sprache",
+        step1Text: "Nutze Englisch, Deutsch oder Arabisch.",
+        step2: "Sag uns, was du brauchst",
+        step2Text: "Teile so viel oder so wenig du möchtest.",
+        step3: "Sprich mit einem Menschen",
+        step3Text: "Eine Person aus dem Support-Team kommt in deinen privaten Chat.",
+        safetyLabel: "Deine Sicherheit zählt",
+        safetyTitle: "Klare Grenzen schaffen Vertrauen.",
+        safetyText: "Haven bietet unterstützende Gespräche. Es ist keine Notfallversorgung, medizinische Behandlung oder Ersatz für professionelle Therapie.",
+        pace: "Dein Tempo",
+        paceText: "Du entscheidest, was du teilen möchtest.",
+        honest: "Ehrliche Informationen",
+        honestText: "Wir erklären, was der Dienst kann und was nicht.",
+        connection: "Menschliche Verbindung",
+        connectionText: "Menschen beantworten die Nachrichten, keine Bots.",
+        smallStep: "Ein kleiner Schritt genügt",
+        closing: "Du kannst mit nur einem Satz beginnen.",
+        footer: "Menschliche Unterstützung in schwierigen Momenten.",
+        notMedical: "Kein Notfall- oder medizinischer Dienst.",
+        conversation: "Gespräch",
+        chatTitle: "Wie fühlst du dich gerade?",
+        demo: "Nur eine Demo — echte menschliche Hilfe ist noch nicht verbunden.",
+        welcome: "Willkommen. Nimm dir Zeit. Worüber möchtest du sprechen?",
+        placeholder: "Schreib, was dir durch den Kopf geht...",
+        send: "Senden",
+        reply: "Danke fürs Teilen. Diese Demo kann deine Nachricht noch nicht an eine Hilfsperson senden.",
+        urgent: "Dringende Hilfe",
+        crisisTitle: "Wenn du in unmittelbarer Gefahr bist",
+        crisisText: "Rufe jetzt den örtlichen Notdienst oder gehe in die nächste Notaufnahme. In der Europäischen Union ist die Notrufnummer 112. In den USA oder Kanada erreichst du Krisenhilfe unter 988.",
+        stay: "Bleib wenn möglich bei einer Person, der du vertraust, während du Hilfe holst.",
+        understand: "Ich verstehe"
+      },
+      ar: {
+        emergency: "هل أنت في خطر مباشر؟ اتصل بخدمات الطوارئ المحلية الآن.",
+        crisis: "مساعدة في الأزمات",
+        howLink: "كيف نعمل",
+        safetyLink: "الأمان",
+        label: "مساحة هادئة للحديث",
+        title: "لست مضطراً لمواجهة هذا وحدك.",
+        intro: "عندما تصبح الحياة ثقيلة، تحدث بخصوصية مع شخص حقيقي من فريق الدعم، دون حكم أو ضغط.",
+        start: "ابدأ محادثة",
+        learn: "اعرف كيف نعمل",
+        human: "دعم بشري حقيقي",
+        private: "الخصوصية أولاً",
+        languages: "ثلاث لغات",
+        quote: "«خذ وقتك. ابدأ من النقطة التي تشعر أنها الأسهل.»",
+        helper: "مايا، فريق الدعم",
+        simple: "بسيط وإنساني",
+        stepsTitle: "الدعم في ثلاث خطوات هادئة",
+        step1: "اختر لغتك",
+        step1Text: "استخدم الإنجليزية أو الألمانية أو العربية.",
+        step2: "أخبرنا بما تحتاجه",
+        step2Text: "شارك بالقدر الذي تريده.",
+        step3: "تحدث مع شخص",
+        step3Text: "ينضم أحد أفراد فريق الدعم إلى محادثتك الخاصة.",
+        safetyLabel: "سلامتك مهمة",
+        safetyTitle: "الوضوح يبني الثقة.",
+        safetyText: "يقدم Haven محادثات داعمة، لكنه ليس خدمة طوارئ أو علاجاً طبياً أو بديلاً عن المختص.",
+        pace: "بالسرعة المناسبة لك",
+        paceText: "أنت تقرر ما تريد مشاركته.",
+        honest: "معلومات واضحة",
+        honestText: "نوضح ما تستطيع الخدمة تقديمه وما لا تستطيع.",
+        connection: "تواصل إنساني",
+        connectionText: "أشخاص حقيقيون يجيبون عن الرسائل، وليس روبوتات.",
+        smallStep: "خطوة صغيرة تكفي",
+        closing: "يمكنك أن تبدأ بجملة واحدة.",
+        footer: "دعم إنساني في الأوقات الصعبة.",
+        notMedical: "ليست خدمة طوارئ أو خدمة طبية.",
+        conversation: "محادثة",
+        chatTitle: "كيف تشعر الآن؟",
+        demo: "هذه نسخة تجريبية فقط، الدعم البشري المباشر غير متصل بعد.",
+        welcome: "أهلاً بك. خذ وقتك. ما الذي ترغب في الحديث عنه؟",
+        placeholder: "اكتب ما يدور في بالك...",
+        send: "إرسال",
+        reply: "شكراً لمشاركتك. لا تستطيع النسخة التجريبية إرسال رسالتك إلى فريق الدعم بعد.",
+        urgent: "مساعدة عاجلة",
+        crisisTitle: "إذا كنت في خطر مباشر",
+        crisisText: "اتصل بخدمة الطوارئ المحلية الآن أو اذهب إلى أقرب قسم طوارئ. في الاتحاد الأوروبي اتصل بالرقم 112. في الولايات المتحدة أو كندا اتصل أو أرسل رسالة إلى 988.",
+        stay: "إن أمكن، ابقَ مع شخص تثق به أثناء طلب المساعدة.",
+        understand: "فهمت"
+      }
+    };
+
+    const language = document.querySelector("#language");
+    const chat = document.querySelector("#chat");
+    const crisisModal = document.querySelector("#crisisModal");
+    const messages = document.querySelector("#messages");
+    const messageInput = document.querySelector("#message");
+    let currentLanguage = localStorage.getItem("haven-language") || "en";
+
+    function changeLanguage(selectedLanguage) {
+      currentLanguage = translations[selectedLanguage] ? selectedLanguage : "en";
+      const text = translations[currentLanguage];
+
+      document.documentElement.lang = currentLanguage;
+      document.documentElement.dir = currentLanguage === "ar" ? "rtl" : "ltr";
+      language.value = currentLanguage;
+      localStorage.setItem("haven-language", currentLanguage);
+
+      document.querySelectorAll("[data-key]").forEach(element => {
+        const value = text[element.dataset.key];
+        if (value) element.textContent = value;
+      });
+
+      document.querySelectorAll("[data-placeholder]").forEach(element => {
+        element.placeholder = text[element.dataset.placeholder];
+      });
+    }
+
+    function openModal(modal) {
+      modal.hidden = false;
+      document.body.classList.add("locked");
+    }
+
+    function closeModal(modal) {
+      modal.hidden = true;
+      document.body.classList.remove("locked");
+    }
+
+    language.addEventListener("change", event => changeLanguage(event.target.value));
+
+    document.querySelectorAll(".open-chat").forEach(button => {
+      button.addEventListener("click", () => openModal(chat));
+    });
+
+    document.querySelector("#openCrisis").addEventListener("click", () => openModal(crisisModal));
+
+    document.querySelectorAll("[data-close]").forEach(button => {
+      button.addEventListener("click", () => closeModal(button.closest(".overlay")));
+    });
+
+    [chat, crisisModal].forEach(modal => {
+      modal.addEventListener("click", event => {
+        if (event.target === modal) closeModal(modal);
+      });
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        document.querySelectorAll(".overlay:not([hidden])").forEach(closeModal);
+      }
+    });
+
+    document.querySelector("#chatForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const message = messageInput.value.trim();
+      if (!message) return;
+
+      const userMessage = document.createElement("p");
+      userMessage.className = "message user";
+      userMessage.textContent = message;
+      messages.appendChild(userMessage);
+      messageInput.value = "";
+
+      setTimeout(() => {
+        const demoReply = document.createElement("p");
+        demoReply.className = "message support";
+        demoReply.textContent = translations[currentLanguage].reply;
+        messages.appendChild(demoReply);
+      }, 400);
+    });
+
+    changeLanguage(currentLanguage);
+  </script>
+</body>
+</html>
