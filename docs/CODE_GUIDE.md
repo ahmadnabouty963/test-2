@@ -17,6 +17,7 @@
 - Öffentliche Startseite: Der große app.innerHTML-Block baut Header, Hero, Live-Zahlen, Ablauf, Geschichten, Sicherheit und Footer.
 - Sprache: state.lang speichert die Sprache, t() holt Texte und translate() aktualisiert data-i18n. Arabisch setzt automatisch RTL.
 - Login: authModal(), submitAuth(), guestModal() und startGuest().
+- Passwort zurücksetzen: resetPasswordModal(), submitPasswordReset(), newPasswordModal() und submitNewPassword().
 - Chat: conversationHome(), createConversation(), openConversation(), renderConversation(), sendMessage() und subscribe().
 - Termine: appointmentModal(), createAppointment() und appointmentRow().
 - Team: staffDashboard() enthält Moderator- und Admin-Ansichten.
@@ -70,3 +71,9 @@ Die Rolle darf nicht über Browser-Metadaten oder Frontend-Code vergeben werden.
 ## Registrierungsablauf
 
 Die Registrierung sendet eine Bestätigungs-E-Mail. Der Bestätigungslink verweist auf die öffentliche Haven-Adresse. Danach kehrt die Person zu Haven zurück und meldet sich mit dem gewählten Passwort an.
+
+## Passwort-Wiederherstellung
+
+Unter dem Passwortfeld der Anmeldung befindet sich „Passwort vergessen?“. Haven sendet über Supabase eine sichere Wiederherstellungs-E-Mail. Der Link führt zurück zur öffentlichen Haven-Seite, wo ein neues Passwort zweimal eingegeben wird. Nach der Änderung wird die Sitzung beendet und die Person meldet sich mit dem neuen Passwort an.
+
+In Supabase muss unter **Authentication → URL Configuration** die öffentliche Haven-Adresse als Site URL und erlaubte Redirect URL eingetragen sein. Passwörter, Codes und geheime Schlüssel gehören niemals in den Quellcode oder in Support-Nachrichten.
