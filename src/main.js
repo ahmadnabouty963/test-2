@@ -1,5 +1,6 @@
 import {createClient} from "@supabase/supabase-js";
 import {translations} from "./translations.js";
+import "./style.css";
 
 const initialUrl=new URL(location.href);
 const initialHash=new URLSearchParams(initialUrl.hash.slice(1));
