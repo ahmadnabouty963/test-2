@@ -55,3 +55,18 @@ Neue Kennzahlen werden in staffDashboard() im Bereich stat-grid ergänzt. Benöt
 3. npm run build
 
 Vor jeder Veröffentlichung muss npm run build ohne Fehler laufen.
+
+## Moderator- und Admin-Anmeldung
+
+Moderatoren brauchen keine getrennte Login-Seite:
+
+1. Die Person registriert ein normales Haven-Konto und bestätigt ihre E-Mail.
+2. Ein Admin öffnet im Team-Dashboard die Ansicht Team und setzt die Rolle auf Moderator.
+3. Der Moderator verwendet anschließend oben rechts Anmelden mit derselben E-Mail und demselben Passwort.
+4. Haven liest die sichere Rolle aus der profiles-Tabelle und öffnet automatisch das Team-Dashboard.
+
+Die Rolle darf nicht über Browser-Metadaten oder Frontend-Code vergeben werden. Nur ein bestehender Admin kann sie über die geschützte Funktion admin_set_role ändern.
+
+## Registrierungsablauf
+
+Die Registrierung sendet eine Bestätigungs-E-Mail. Der Bestätigungslink verweist auf die öffentliche Haven-Adresse. Danach kehrt die Person zu Haven zurück und meldet sich mit dem gewählten Passwort an.
