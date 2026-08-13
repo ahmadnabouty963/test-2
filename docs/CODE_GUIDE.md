@@ -76,4 +76,6 @@ Die Registrierung sendet eine Bestätigungs-E-Mail. Der Bestätigungslink verwei
 
 Unter dem Passwortfeld der Anmeldung befindet sich „Passwort vergessen?“. Haven sendet über Supabase eine sichere Wiederherstellungs-E-Mail. Der Link führt zurück zur öffentlichen Haven-Seite, wo ein neues Passwort zweimal eingegeben wird. Nach der Änderung wird die Sitzung beendet und die Person meldet sich mit dem neuen Passwort an.
 
+Haven speichert beim ersten Laden sofort, ob die URL zu einer Passwort-Wiederherstellung gehört. Dadurch bleibt der Ablauf zuverlässig, auch wenn Supabase die Token-Parameter kurz danach aus der Adresszeile entfernt. Abgelaufene oder bereits verwendete Links zeigen eine verständliche Meldung und führen direkt zur Anforderung eines neuen Links. Immer nur den neuesten Wiederherstellungslink verwenden; ein neuer Link macht ältere Links ungültig.
+
 In Supabase muss unter **Authentication → URL Configuration** die öffentliche Haven-Adresse als Site URL und erlaubte Redirect URL eingetragen sein. Passwörter, Codes und geheime Schlüssel gehören niemals in den Quellcode oder in Support-Nachrichten.
