@@ -52,3 +52,24 @@ npm run build
 Zusätzlich notwendig sind geschulte Moderatoren, feste Dienstzeiten, ein Krisen- und Eskalationsablauf, Datenschutzinformation, Nutzungsbedingungen, Löschfristen, Missbrauchsschutz, länderspezifische Krisenkontakte sowie eine rechtliche und technische Sicherheitsprüfung.
 
 Haven ist keine Therapie, medizinische Behandlung oder Notfallhilfe.
+
+
+## Haven v2
+
+The current version adds:
+
+- full-screen member, moderator and admin workspaces
+- appointment requests for registered members
+- live moderator availability counts
+- admin role management
+- a darker, calmer multilingual design
+- English, German and Arabic including RTL
+- documented Supabase security and RLS rules
+
+Documentation:
+
+- `docs/PLANNING.md` – product plan, roles and roadmap
+- `docs/CODE_GUIDE.md` – file map and practical change guide
+- `supabase/upgrade-v2.sql` – database upgrade for an existing v1 project
+
+The production frontend uses the public Supabase publishable key only. Never add a secret or service-role key to frontend files.
