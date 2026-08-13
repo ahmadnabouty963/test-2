@@ -1,75 +1,32 @@
-# Haven
+# Haven Human Support
 
-Professionelle, dreisprachige Plattform für vertrauliche Gespräche mit echten Moderatoren.
+Haven is a calm, multilingual human-support service with guest and member chat, moderator/admin dashboards, appointments, realtime messages and privacy-safe moderator notifications.
 
-## Enthalten
-
-- Vite 8 und Supabase Auth/Realtime
-- Gastzugang über anonyme Supabase-Konten
-- Registrierung und Login per E-Mail
-- Deutsch, Englisch und Arabisch mit RTL-Layout
-- Private Warteschlange und Moderator-Dashboard
-- Echtzeit-Nachrichten und Row Level Security
-- Responsives Design und sichtbare Krisenhinweise
-
-## Lokal starten
+## Website
 
 ```bash
 npm install
-cp .env.example .env
 npm run dev
+npm run check
 ```
 
-## Supabase einmalig einrichten
+The website is a Vite application ready for Vercel. Supabase confirmation and password-recovery links use `location.origin`, so they follow the currently opened Vercel or custom-domain address.
 
-1. Ein Supabase-Projekt erstellen.
-2. `supabase/schema.sql` vollständig im **SQL Editor** ausführen.
-3. Unter **Authentication → Sign In / Providers → Anonymous** anonyme Logins aktivieren.
-4. Project URL und öffentlichen Publishable-/Anon-Key in `.env` eintragen:
+## Before publishing on a new Vercel URL
 
-```env
-VITE_SUPABASE_URL=https://DEIN-PROJEKT.supabase.co
-VITE_SUPABASE_ANON_KEY=DEIN_OEFFENTLICHER_KEY
-```
+Add the exact Vercel production address in Supabase under **Authentication → URL Configuration** as the Site URL and as an allowed redirect URL. Keep the previous URL temporarily until confirmation and password-reset have been retested.
 
-5. Einen Account über die Website registrieren und dessen UUID unter **Authentication → Users** kopieren.
-6. Diesen Account im SQL Editor zum Moderator machen:
+## Structure
 
-```sql
-update public.profiles set role = 'moderator' where id = 'USER_UUID';
-```
+- `src/main.js` — website, authentication, chat, appointments and dashboards
+- `src/style.css` — responsive design and colors
+- `src/translations.js` — English, German and Arabic text
+- `supabase/` — database schema, upgrades and moderator notification function
+- `mobile/` — shared Expo source for Android and iPhone
+- `docs/` — planning, code guide and launch checklist
 
-Danach kann sich der Moderator anmelden, wartende Gespräche übernehmen und live antworten.
+## Secrets
 
-## Produktionsbuild
+The Supabase publishable browser key is intentionally public. Never commit a service-role key, Resend key, Vercel token, Apple key or Google service-account key.
 
-```bash
-npm run build
-```
-
-## Vor öffentlichem Betrieb
-
-Zusätzlich notwendig sind geschulte Moderatoren, feste Dienstzeiten, ein Krisen- und Eskalationsablauf, Datenschutzinformation, Nutzungsbedingungen, Löschfristen, Missbrauchsschutz, länderspezifische Krisenkontakte sowie eine rechtliche und technische Sicherheitsprüfung.
-
-Haven ist keine Therapie, medizinische Behandlung oder Notfallhilfe.
-
-
-## Haven v2
-
-The current version adds:
-
-- full-screen member, moderator and admin workspaces
-- appointment requests for registered members
-- live moderator availability counts
-- admin role management
-- a darker, calmer multilingual design
-- English, German and Arabic including RTL
-- documented Supabase security and RLS rules
-
-Documentation:
-
-- `docs/PLANNING.md` – product plan, roles and roadmap
-- `docs/CODE_GUIDE.md` – file map and practical change guide
-- `supabase/upgrade-v2.sql` – database upgrade for an existing v1 project
-
-The production frontend uses the public Supabase publishable key only. Never add a secret or service-role key to frontend files.
+See `docs/LAUNCH_CHECKLIST.md` before public use.

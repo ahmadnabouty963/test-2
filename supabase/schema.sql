@@ -71,3 +71,4 @@ grant select, insert on public.messages to authenticated;
 grant usage, select on sequence public.messages_id_seq to authenticated;
 alter publication supabase_realtime add table public.conversations; alter publication supabase_realtime add table public.messages;
 -- Promote a trusted account manually: update public.profiles set role='moderator' where id='USER_UUID';
+

@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "Haven Human Support",
+    "slug": "haven-human-support",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "haven",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.havenhumansupport.app"
+    },
+    "android": {
+      "package": "com.havenhumansupport.app",
+      "permissions": ["POST_NOTIFICATIONS"]
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "sounds": []
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+      }
+    }
+  }
+}

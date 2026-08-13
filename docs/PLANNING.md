@@ -24,6 +24,10 @@ Haven ist ein ruhiger, mehrsprachiger Chat-Service für Menschen in schwierigen 
 - Dreisprachige Hoffnungsgeschichten als klar gekennzeichnete Platzhalter
 - Krisenhinweis und klare Abgrenzung zu Therapie/Notfallhilfe
 - Supabase RLS, rollenbasierte Funktionen und private Hilfsfunktionen
+- Live-Browser-Benachrichtigung für eingeloggte Moderatoren
+- Datenschutzfreundlicher Push-Dienst ohne Themen oder Chat-Inhalte
+- Gemeinsame iPhone-/Android-App für Gäste, Mitglieder, Moderatoren und Admins
+- Mobile Push-Registrierung nur für freigeschaltete Teamrollen
 
 ## Rollen und Rechte
 
@@ -37,12 +41,12 @@ Haven ist ein ruhiger, mehrsprachiger Chat-Service für Menschen in schwierigen 
 | Verfügbarkeit setzen | Nein | Nein | Ja | Ja |
 | Rollen ändern | Nein | Nein | Nein | Ja |
 
-## Nächste sinnvolle Schritte
+## Externe Freigaben vor dem Store-Start
 
 - Vom Betreiber geliefertes Hero-Foto einsetzen
-- Erstes Betreiberkonto als Admin freischalten
-- Anonyme Anmeldung in Supabase aktivieren
-- E-Mail-Vorlagen und Absender-Domain konfigurieren
+- Expo-Projekt-ID in mobile/app.json einsetzen und Push-Zertifikate über EAS hinterlegen
+- Apple-Developer- und Google-Play-Konto für die Store-Veröffentlichung verbinden
+- Für Moderator-E-Mails eine Absender-Domain bei Resend freigeben und zwei Supabase-Secrets setzen
 - Freigegebene echte Erfahrungsberichte statt Platzhalter einpflegen
 - Datenschutz, Impressum und Moderationsrichtlinien rechtlich prüfen
 - Optional: feste Moderator-Zeitfenster statt frei wählbarer Terminanfragen
@@ -54,4 +58,3 @@ Haven ist ein ruhiger, mehrsprachiger Chat-Service für Menschen in schwierigen 
 - Serifenschrift nur für emotionale Überschriften
 - Klare Abstände, wenig visuelle Ablenkung
 - Keine KI-Symbole, Roboter-Optik oder künstlich wirkende Texte
-

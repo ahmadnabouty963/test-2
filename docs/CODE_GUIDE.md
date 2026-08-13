@@ -4,15 +4,20 @@
 
 | Datei | Aufgabe |
 |---|---|
-| app/page.tsx | Erstellt den App-Container und lädt Haven im Browser. |
-| app/haven-client.js | Seitenaufbau, Login, Chat, Termine und Dashboards. |
-| app/translations.js | Alle Texte für Englisch, Deutsch und Arabisch. |
-| app/globals.css | Farben, Layout, Chat, Dashboards und Mobilansicht. |
-| app/layout.tsx | Browser-Titel und allgemeines HTML-Layout. |
+| index.html | Erstellt den App-Container und lädt Haven im Browser. |
+| src/main.js | Seitenaufbau, Login, Chat, Termine und Dashboards. |
+| src/translations.js | Alle Texte für Englisch, Deutsch und Arabisch. |
+| src/style.css | Farben, Layout, Chat, Dashboards und Mobilansicht. |
 | supabase/upgrade-v2.sql | Datenbank-Erweiterung für Admins, Termine und Verfügbarkeit. |
+| supabase/upgrade-v3-notifications.sql | Sichere Gerätetokens und Versandprotokoll für Moderator-Benachrichtigungen. |
+| supabase/functions/notify-moderators/index.ts | Geschützter Push-/E-Mail-Versand ohne Gesprächsinhalte. |
+| mobile/App.js | Gemeinsame iPhone-/Android-App mit Login, Gastzugang, Chat, Terminen und Moderator-Warteschlange. |
+| mobile/app.json | App-Name, Paketnamen und Expo-Konfiguration. |
+| mobile/eas.json | Entwicklungs- und Store-Builds für iOS und Android. |
+| mobile/README.md | Schritte zum Testen und Veröffentlichen der App. |
 | docs/PLANNING.md | Produktziel, Rollen und nächste Schritte. |
 
-## Wichtige Bereiche in app/haven-client.js
+## Wichtige Bereiche in src/main.js
 
 - Öffentliche Startseite: Der große app.innerHTML-Block baut Header, Hero, Live-Zahlen, Ablauf, Geschichten, Sicherheit und Footer.
 - Sprache: state.lang speichert die Sprache, t() holt Texte und translate() aktualisiert data-i18n. Arabisch setzt automatisch RTL.
@@ -21,16 +26,17 @@
 - Chat: conversationHome(), createConversation(), openConversation(), renderConversation(), sendMessage() und subscribe().
 - Termine: appointmentModal(), createAppointment() und appointmentRow().
 - Team: staffDashboard() enthält Moderator- und Admin-Ansichten.
+- Benachrichtigungen: subscribeStaffAlerts(), enableStaffNotifications() und notifyStaff().
 
 ## Häufige Änderungen
 
 ### Farben
 
-Ganz oben in app/globals.css stehen die Variablen --night, --forest, --sage und --paper. Eine Änderung dort wirkt auf die gesamte Seite.
+Ganz oben in src/style.css stehen die Variablen --night, --forest, --sage und --paper. Eine Änderung dort wirkt auf die gesamte Seite.
 
 ### Texte
 
-In app/translations.js denselben Schlüssel in en, de und ar ändern, zum Beispiel heroTitle.
+In src/translations.js denselben Schlüssel in en, de und ar ändern, zum Beispiel heroTitle.
 
 ### Hero-Foto
 
@@ -48,6 +54,19 @@ Neue Kennzahlen werden in staffDashboard() im Bereich stat-grid ergänzt. Benöt
 - Admin- und Moderator-Aktionen laufen über kontrollierte RPC-Funktionen.
 - Öffentliche Statistiken geben ausschließlich Summen zurück.
 - Gastkonten dürfen keine Termine buchen.
+- Push- und E-Mail-Nachrichten enthalten niemals Thema, Sprache, Namen oder Nachrichtentext.
+- Gerätetokens können nur vom zugehörigen freigeschalteten Moderator/Admin verwaltet werden.
+
+## Benachrichtigungsablauf
+
+1. Ein Gast oder Mitglied erstellt eine Warteschlangen-Unterhaltung.
+2. Das Moderator-Dashboard erhält das Ereignis sofort über Supabase Realtime.
+3. Ein geöffnetes Browser-Dashboard zeigt Toast und – nach Zustimmung – eine System-Benachrichtigung.
+4. Die App registriert freigeschaltete Moderator-Geräte in device_push_tokens.
+5. Die geschützte Edge Function notify-moderators sendet eine allgemeine Push-Nachricht an diese Geräte.
+6. Der erste freie Moderator öffnet die Warteschlange und übernimmt die Unterhaltung atomar über accept_conversation.
+
+E-Mail-Versand ist im selben Dienst vorbereitet. Er wird aktiv, sobald in Supabase die Secrets RESEND_API_KEY und HAVEN_EMAIL_FROM gesetzt sind. Ohne diese Secrets bleibt E-Mail bewusst aus; Browser, Realtime und App-Push funktionieren unabhängig davon.
 
 ## Lokal starten
 

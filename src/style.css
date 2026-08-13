@@ -1,4 +1,3 @@
-@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap");
 
 :root{--night:#12221f;--forest:#1c3530;--forest-2:#274a42;--sage:#6f9788;--sage-light:#b7cbbf;--mist:#e5ebe6;--paper:#f2f2ec;--warm:#e9e4db;--white:#fbfcf8;--ink:#172b27;--muted:#64716d;--line:#d1d9d3;--danger:#8b4848;--gold:#c2a978;--shadow:0 28px 80px rgba(9,27,23,.2);font-family:"DM Sans",sans-serif;color:var(--ink);background:var(--paper);font-synthesis:none}
@@ -21,3 +20,27 @@ html[dir=rtl] .close{right:auto;left:18px}html[dir=rtl] .dialog-head h2,html[dir
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.button{transition:none}}
 .forgot-link{width:max-content;margin-top:-8px;justify-self:end}.form-back{justify-self:center}
 .recovery-error>span{background:var(--danger)}.recovery-error .form-back{margin-top:14px}
+
+/* v3: quieter palette, balanced process cards and a full-height conversation workspace. */
+:root{--night:#10211d;--forest:#19332d;--forest-2:#244c42;--sage:#52786b;--sage-light:#afc5b9;--mist:#dce5de;--paper:#eae9e2;--warm:#e1dcd2;--white:#f4f4ee;--ink:#142923;--muted:#40524b;--line:#bdc9c1;--shadow:0 28px 80px rgba(7,25,20,.2)}
+body{color:var(--ink)}
+.card{min-height:225px;background:#e8ece7;box-shadow:0 10px 30px rgba(18,44,37,.035)}
+.card h3{margin:34px 0 9px}
+.card p,.hero-copy,.metrics span,.dialog-head>p:last-child,.form-note,.list-row small,.conversation>header small,.appointment-main small,.team-row small,.notification-strip small{color:var(--muted)}
+.form input::placeholder,.form textarea::placeholder,.composer textarea::placeholder{color:#52635d;opacity:1}
+.modal.chat-panel #modalBody,.modal.dashboard-panel #modalBody{height:100%}
+.modal.chat-panel .close,.modal.dashboard-panel .close{background:rgba(222,229,223,.94)}
+.chat-workspace{height:100%;background:var(--night)}
+.chat-context{min-height:100%;background:linear-gradient(180deg,#122a24,var(--night))}
+.chat-context>div{margin:auto 0 22px}.chat-context>p{margin:0 0 28px}
+.conversation{min-height:0;background:#e4e9e3}
+.conversation>header,.composer{background:#f3f4ef}
+.messages{background:radial-gradient(circle at 80% 10%,rgba(111,151,136,.1),transparent 35%),#e4e9e3}
+.messages-empty{max-width:620px;padding:24px 30px;border:1px solid #b7c5bc;border-radius:16px;background:#edf0ea;color:#34463f;line-height:1.75}
+.composer{padding:18px 25px;gap:12px}.composer textarea{min-height:62px;background:#e9ebe5}
+.dashboard-main{background:#e6e9e3}
+.notification-strip{margin-bottom:14px;padding:15px 17px;display:flex;align-items:center;justify-content:space-between;gap:18px;border:1px solid #b9c9c0;border-radius:15px;background:#dce6df}
+.notification-strip strong,.notification-strip small{display:block}.notification-strip small{margin-top:2px;color:var(--muted);font-size:.75rem}
+.notification-dot{width:8px;height:8px;border-radius:50%;background:#51a477;box-shadow:0 0 0 4px rgba(81,164,119,.14)}
+.notification-button:disabled{opacity:.78;cursor:default}
+@media(max-width:760px){.card{min-height:0}.notification-strip{align-items:flex-start;flex-direction:column}.notification-strip .button{width:100%}}
