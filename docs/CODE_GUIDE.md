@@ -1,100 +1,216 @@
-# Haven – Code- und Änderungsleitfaden
+# Haven – Entwicklerhandbuch
 
-## Projektstruktur
+Dieses Dokument erklärt, welche Technik Haven verwendet, wo eine Funktion zu finden ist und wie die Teile zusammenarbeiten. Für die genaue Erklärung der einzelnen Codezeilen siehe [`LINE_BY_LINE.md`](./LINE_BY_LINE.md).
+
+## 1. Technik und Aufgabe
+
+| Technik | Wofür Haven sie benutzt |
+|---|---|
+| HTML (`index.html`) | Startpunkt der Website und Container `#app`. |
+| CSS (`src/style.css`) | Farben, Kontrast, Layout, Dialoge, Chat, Dashboard und Mobilansicht. |
+| JavaScript (`src/main.js`) | Oberfläche, Login, Rollen, Chat, Termine, Realtime und Bedienung. |
+| Vite | Lokaler Entwicklungsserver und optimierter Produktions-Build. |
+| npm | Installiert und sperrt die benötigten JavaScript-Pakete. |
+| Supabase Auth | Registrierung, Anmeldung, anonyme Gäste, E-Mail-Bestätigung und Passwort-Reset. |
+| Supabase PostgreSQL | Speichert Profile, Gespräche, Nachrichten, Termine und Benachrichtigungsdaten. |
+| Row Level Security (RLS) | Erzwingt in der Datenbank, wer welche Zeile lesen oder schreiben darf. |
+| Supabase Realtime | Überträgt neue Nachrichten und neue Warteschlangen-Einträge ohne Neuladen. |
+| Supabase Edge Function | Versendet allgemeine Push-/E-Mail-Hinweise an das Team, ohne Gesprächsinhalte. |
+| Expo / React Native | Gemeinsamer App-Code für Android und iPhone. |
+| Vercel | Baut und veröffentlicht die Website aus GitHub. |
+| GitHub | Versionsverwaltung, Sicherung und automatische Quelle für Vercel. |
+
+## 2. Wichtige Dateien
 
 | Datei | Aufgabe |
 |---|---|
-| index.html | Erstellt den App-Container und lädt Haven im Browser. |
-| src/main.js | Seitenaufbau, Login, Chat, Termine und Dashboards. |
-| src/translations.js | Alle Texte für Englisch, Deutsch und Arabisch. |
-| src/style.css | Farben, Layout, Chat, Dashboards und Mobilansicht. |
-| supabase/upgrade-v2.sql | Datenbank-Erweiterung für Admins, Termine und Verfügbarkeit. |
-| supabase/upgrade-v3-notifications.sql | Sichere Gerätetokens und Versandprotokoll für Moderator-Benachrichtigungen. |
-| supabase/functions/notify-moderators/index.ts | Geschützter Push-/E-Mail-Versand ohne Gesprächsinhalte. |
-| mobile/App.js | Gemeinsame iPhone-/Android-App mit Login, Gastzugang, Chat, Terminen und Moderator-Warteschlange. |
-| mobile/app.json | App-Name, Paketnamen und Expo-Konfiguration. |
-| mobile/eas.json | Entwicklungs- und Store-Builds für iOS und Android. |
-| mobile/README.md | Schritte zum Testen und Veröffentlichen der App. |
-| docs/PLANNING.md | Produktziel, Rollen und nächste Schritte. |
+| `index.html` | Lädt die Web-App und setzt grundlegende Metadaten. |
+| `src/main.js` | Gesamte Web-Anwendungslogik. |
+| `src/translations.js` | Alle sichtbaren Texte für Englisch, Deutsch und Arabisch. |
+| `src/style.css` | Gesamtes visuelles Design und responsive Regeln. |
+| `supabase/schema.sql` | Grundtabellen, RLS-Regeln, Trigger und Chat-Funktionen. |
+| `supabase/upgrade-v2.sql` | Admin-Rolle, Termine, Verfügbarkeit und öffentliche Statistiken. |
+| `supabase/upgrade-v3-notifications.sql` | Push-Geräte und Versandprotokoll. |
+| `supabase/upgrade-v4-admin-chat.sql` | Erlaubt Admins ausdrücklich, Chats wie Moderatoren anzunehmen. |
+| `supabase/functions/notify-moderators/index.ts` | Geschützter Push- und E-Mail-Versand. |
+| `mobile/App.js` | Android-/iPhone-App mit Auth, Chat, Termin und Team-Warteschlange. |
+| `vercel.json` | Vercel-Build und SPA-Weiterleitung. |
+| `.env.example` | Beispiel für öffentliche Konfiguration, niemals echte geheime Schlüssel. |
 
-## Wichtige Bereiche in src/main.js
+## 3. Rollen
 
-- Öffentliche Startseite: Der große app.innerHTML-Block baut Header, Hero, Live-Zahlen, Ablauf, Geschichten, Sicherheit und Footer.
-- Sprache: state.lang speichert die Sprache, t() holt Texte und translate() aktualisiert data-i18n. Arabisch setzt automatisch RTL.
-- Login: authModal(), submitAuth(), guestModal() und startGuest().
-- Passwort zurücksetzen: resetPasswordModal(), submitPasswordReset(), newPasswordModal() und submitNewPassword().
-- Chat: conversationHome(), createConversation(), openConversation(), renderConversation(), sendMessage() und subscribe().
-- Termine: appointmentModal(), createAppointment() und appointmentRow().
-- Team: staffDashboard() enthält Moderator- und Admin-Ansichten.
-- Benachrichtigungen: subscribeStaffAlerts(), enableStaffNotifications() und notifyStaff().
+| Rolle | Anmeldung | Rechte |
+|---|---|---|
+| Gast | Anonymes Supabase-Konto | Einen Chat beginnen und am eigenen Chat teilnehmen; keine Termine. |
+| Mitglied | E-Mail und Passwort | Eigene Chats, Nachrichten und Termine. |
+| Moderator | Normales Konto, danach vom Admin hochgestuft | Warteschlange sehen, Chat annehmen, Nachrichten senden, Termine verwalten, Verfügbarkeit setzen. |
+| Admin | Normales Konto mit Admin-Rolle | Alle Moderator-Rechte plus Teamrollen verwalten. |
 
-## Häufige Änderungen
+Eine Rolle wird niemals vom Browser selbst vergeben. `admin_set_role` prüft die Admin-Rolle serverseitig.
 
-### Farben
+## 4. Datenbanktabellen
 
-Ganz oben in src/style.css stehen die Variablen --night, --forest, --sage und --paper. Eine Änderung dort wirkt auf die gesamte Seite.
+| Tabelle | Inhalt | Schutz |
+|---|---|---|
+| `profiles` | Anzeigename, Rolle, Verfügbarkeit | Eigenes Profil; Teamzugriff nur nach RLS/Rolle. |
+| `conversations` | Besitzer, Moderator, Thema, Sprache und Status | Nur Teilnehmer oder freigeschaltetes Team. |
+| `messages` | Gespräch, Absender, Text und Zeit | Nur Personen mit Zugriff auf das Gespräch. |
+| `appointments` | Termin, Dauer, Notiz, Moderator und Status | Mitglied sieht eigene; Team verwaltet nach RLS. |
+| `device_push_tokens` | Expo-Push-Token eines Team-Geräts | Nur das zugehörige freigeschaltete Teamkonto. |
+| `notification_events` | Wann Push/E-Mail versucht oder versendet wurde | Serverinterne Versandkontrolle. |
 
-### Texte
+## 5. Web-Funktionen in `src/main.js`
 
-In src/translations.js denselben Schlüssel in en, de und ar ändern, zum Beispiel heroTitle.
+### Grundlagen und Darstellung
 
-### Hero-Foto
+| Funktion | Zweck |
+|---|---|
+| `t(key)` | Holt einen Text in der aktiven Sprache und fällt auf Englisch zurück. |
+| `escapeHtml(value)` | Macht Benutzereingaben sicher für HTML-Ausgabe. |
+| `formatDate(value)` | Formatiert Datum und Uhrzeit passend zur Sprache. |
+| `roleLabel(role)` | Übersetzt die technische Rolle in eine sichtbare Bezeichnung. |
+| `statusLabel(status)` | Übersetzt den Gesprächsstatus. |
+| `translate()` | Setzt Sprache, RTL für Arabisch und alle `data-i18n`-Texte. |
+| `renderHeader()` | Zeigt je nach Sitzung und Rolle die richtigen Kopfzeilen-Schaltflächen. |
+| `showToast(message, error)` | Zeigt eine kurze Erfolgs- oder Fehlermeldung. |
+| `showModal(html, mode)` | Öffnet einen Dialog und setzt dessen Inhalt/Layout. |
+| `closeModal()` | Schließt den Dialog und beendet die aktuelle Chat-Realtime-Verbindung. |
+| `loadProfile()` | Lädt das Profil der angemeldeten Person und aktiviert Teamfunktionen. |
+| `loadStats()` | Lädt die öffentliche Zahl aller und aktuell verfügbarer Moderatoren. |
 
-Das Foto als public/hero-support.webp speichern. Danach bei .hero-photo in app/globals.css eine URL zum Bild, background-size: cover und background-position: center ergänzen. Anschließend photo-note aus app/haven-client.js entfernen.
+### Anmeldung und rechtliche Dialoge
 
-### Dashboard
+| Funktion | Zweck |
+|---|---|
+| `authModal(mode)` | Baut Login oder Registrierung. |
+| `resetPasswordModal()` | Fragt die E-Mail für einen Passwort-Reset ab. |
+| `newPasswordModal()` | Zeigt nach gültigem Recovery-Link das Formular für ein neues Passwort. |
+| `recoveryErrorModal()` | Erklärt einen ungültigen/abgelaufenen Recovery-Link. |
+| `guestModal()` | Fragt Gast-Spitzname und Zustimmung ab. |
+| `crisisModal()` | Zeigt klar den Notfallhinweis und Krisenwege. |
+| `privacyModal()` | Zeigt Datenschutzhinweise. |
+| `imprintModal()` | Zeigt das Impressum und warnt, solange Pflichtangaben fehlen. |
+| `submitAuth(form)` | Führt Registrierung oder Login aus und verarbeitet Fehler. |
+| `submitPasswordReset(form)` | Sendet die Supabase-Recovery-E-Mail zur aktuellen Domain. |
+| `submitNewPassword(form)` | Prüft beide Passwörter, speichert das neue Passwort und meldet sicher ab. |
+| `startGuest(nickname)` | Erstellt eine anonyme Sitzung und öffnet den Chatbereich. |
 
-Neue Kennzahlen werden in staffDashboard() im Bereich stat-grid ergänzt. Benötigte Daten müssen vorher aus Supabase geladen werden.
+### Chats
 
-## Supabase-Sicherheit
+| Funktion | Zweck |
+|---|---|
+| `memberSpace()` | Lädt Chats und Termine eines Mitglieds. |
+| `chatRow(c)` | Rendert einen normalen Gesprächseintrag. |
+| `staffChatRow(c)` | Rendert einen Team-Eintrag mit deutlicher Annehmen-Schaltfläche. |
+| `conversationHome()` | Öffnet einen laufenden Chat oder das Formular für einen neuen. |
+| `createConversation(form)` | Speichert einen wartenden Chat und löst Teamhinweise aus. |
+| `openConversation(id)` | Lädt Gespräch und Nachrichten parallel. |
+| `renderConversation()` | Baut den großen Chat-Arbeitsbereich. |
+| `messageHtml()` | Rendert alle Chatblasen und markiert eigene Nachrichten. |
+| `scrollMessages()` | Scrollt nach unten zur neuesten Nachricht. |
+| `sendMessage(form)` | Prüft Text und speichert eine Nachricht. |
+| `subscribe(id)` | Abonniert neue Nachrichten des geöffneten Gesprächs. |
+| `unsubscribe()` | Entfernt das Chat-Abonnement. |
+| `endConversation()` | Ruft die geschützte Datenbankfunktion zum Beenden auf. |
+| `acceptChat(id, status)` | Nimmt wartende Gespräche atomar an und öffnet sie danach. |
 
-- Im Browser steht nur der öffentliche Publishable Key.
-- Secret- oder Service-Role-Keys dürfen nie in Frontend-Dateien stehen.
-- Alle öffentlichen Tabellen verwenden Row Level Security.
-- Admin- und Moderator-Aktionen laufen über kontrollierte RPC-Funktionen.
-- Öffentliche Statistiken geben ausschließlich Summen zurück.
-- Gastkonten dürfen keine Termine buchen.
-- Push- und E-Mail-Nachrichten enthalten niemals Thema, Sprache, Namen oder Nachrichtentext.
-- Gerätetokens können nur vom zugehörigen freigeschalteten Moderator/Admin verwaltet werden.
+### Team und Benachrichtigungen
 
-## Benachrichtigungsablauf
+| Funktion | Zweck |
+|---|---|
+| `notificationPermission()` | Liest, ob Browser-Benachrichtigungen unterstützt/erlaubt sind. |
+| `notificationButton()` | Rendert den passenden Zustand der Benachrichtigungs-Schaltfläche. |
+| `notifyStaff()` | Setzt Browser-Titel, Toast und optionale Systembenachrichtigung. |
+| `subscribeStaffAlerts()` | Abonniert neue wartende Gespräche für Moderator/Admin. |
+| `unsubscribeStaffAlerts()` | Beendet dieses Team-Abonnement. |
+| `enableStaffNotifications()` | Fragt einmalig Browser-Erlaubnis an. |
+| `staffDashboard(view)` | Lädt Warteschlange, Termine, Statistiken oder Teamverwaltung. |
+| `profileRow(p)` | Rendert eine Person für die Admin-Rollenverwaltung. |
 
-1. Ein Gast oder Mitglied erstellt eine Warteschlangen-Unterhaltung.
-2. Das Moderator-Dashboard erhält das Ereignis sofort über Supabase Realtime.
-3. Ein geöffnetes Browser-Dashboard zeigt Toast und – nach Zustimmung – eine System-Benachrichtigung.
-4. Die App registriert freigeschaltete Moderator-Geräte in device_push_tokens.
-5. Die geschützte Edge Function notify-moderators sendet eine allgemeine Push-Nachricht an diese Geräte.
-6. Der erste freie Moderator öffnet die Warteschlange und übernimmt die Unterhaltung atomar über accept_conversation.
+### Termine und Start
 
-E-Mail-Versand ist im selben Dienst vorbereitet. Er wird aktiv, sobald in Supabase die Secrets RESEND_API_KEY und HAVEN_EMAIL_FROM gesetzt sind. Ohne diese Secrets bleibt E-Mail bewusst aus; Browser, Realtime und App-Push funktionieren unabhängig davon.
+| Funktion | Zweck |
+|---|---|
+| `appointmentModal()` | Prüft Mitgliedschaft und öffnet die Terminplanung. |
+| `createAppointment(form)` | Wandelt Datum in UTC um und speichert den Termin. |
+| `appointmentRow(a, staff)` | Rendert Termin und passende Mitglied-/Teamaktionen. |
+| globaler `click`-Handler | Verteilt alle `data-action`-Klicks auf Funktionen. |
+| globaler `submit`-Handler | Verteilt Formulare auf die richtige Submit-Funktion. |
+| globaler `change`-Handler | Verarbeitet Sprache, Team-Verfügbarkeit und Rollenänderungen. |
+| `init()` | Startet Übersetzung, Statistik, Auth-Listener und bestehende Sitzung. |
 
-## Lokal starten
+## 6. Mobile Funktionen in `mobile/App.js`
 
-1. npm install
-2. npm run dev
-3. npm run build
+| Funktion/Komponente | Zweck |
+|---|---|
+| `Button` | Einheitliche berührbare App-Schaltfläche. |
+| `Field` | Einheitliches beschriftetes Eingabefeld. |
+| `Brand` | Haven-Logozeile. |
+| `App` | Zentraler Zustand, Navigation, Sitzung, Profil, Nachrichten und Push. |
+| `signOut` | Setzt Team offline, meldet ab und leert Chatdaten. |
+| `openConversation` | Lädt Nachrichten, öffnet Chat und startet Realtime. |
+| `registerPush` | Fordert Push-Rechte an und speichert Expo-Gerätetoken sicher. |
+| `GuestLanding` | Öffentliche App-Startseite. |
+| `Auth` / `submit` | Registrierung und Anmeldung. |
+| `GuestStart` / `submit` | Anonymes Konto und neuer wartender Chat. |
+| `Dashboard` / `load` | Lädt je nach Rolle eigene Chats oder Team-Warteschlange. |
+| `Chat` / `send` | Zeigt Realtime-Nachrichten und sendet neue. |
+| `Appointment` / `submit` | Erstellt Mitgliedstermine. |
 
-Vor jeder Veröffentlichung muss npm run build ohne Fehler laufen.
+## 7. SQL-Funktionen
 
-## Moderator- und Admin-Anmeldung
+| Funktion | Zweck |
+|---|---|
+| `handle_new_user` | Erstellt automatisch ein Profil nach einem neuen Auth-Konto. |
+| `private.is_moderator` | Erlaubt Moderator **und Admin** Team-Chatrechte. |
+| `private.can_access_conversation` | Prüft Besitzer, zugewiesenen Moderator oder Teamrolle. |
+| `accept_conversation` | Weist genau einem Teammitglied einen wartenden Chat zu. |
+| `close_conversation` | Beendet einen Chat nur für Teilnehmer. |
+| `private.is_staff` | Gemeinsame Prüfung auf Moderator/Admin. |
+| `private.is_admin` | Prüft ausschließlich Admin. |
+| `private.is_permanent_user` | Schließt anonyme Konten bei Terminregeln aus. |
+| `get_public_stats` | Gibt nur aggregierte Teamzahlen zurück. |
+| `set_staff_availability` | Setzt Teamstatus online/beschäftigt/offline. |
+| `manage_appointment` | Team nimmt Termin an, schließt ihn oder ändert Status. |
+| `cancel_own_appointment` | Mitglied storniert den eigenen Termin. |
+| `admin_set_role` | Admin ändert eine Rolle kontrolliert. |
 
-Moderatoren brauchen keine getrennte Login-Seite:
+## 8. Chat-Ablauf
 
-1. Die Person registriert ein normales Haven-Konto und bestätigt ihre E-Mail.
-2. Ein Admin öffnet im Team-Dashboard die Ansicht Team und setzt die Rolle auf Moderator.
-3. Der Moderator verwendet anschließend oben rechts Anmelden mit derselben E-Mail und demselben Passwort.
-4. Haven liest die sichere Rolle aus der profiles-Tabelle und öffnet automatisch das Team-Dashboard.
+1. Gast oder Mitglied meldet sich an.
+2. `createConversation` fügt `status = waiting` ein.
+3. RLS kontrolliert Besitzer und Startstatus.
+4. Realtime informiert geöffnete Team-Dashboards.
+5. Die Edge Function verschickt auf Wunsch allgemeine Push-/E-Mail-Hinweise.
+6. Moderator/Admin klickt „Annehmen“.
+7. `accept_conversation` setzt atomar `moderator_id` und `active`.
+8. Beide Seiten abonnieren neue Nachrichten.
+9. `close_conversation` beendet das Gespräch.
 
-Die Rolle darf nicht über Browser-Metadaten oder Frontend-Code vergeben werden. Nur ein bestehender Admin kann sie über die geschützte Funktion admin_set_role ändern.
+## 9. Sicherheit und Datenschutz – technisch korrekt formuliert
 
-## Registrierungsablauf
+- Die Verbindung zu Supabase/Vercel läuft über HTTPS.
+- Passwörter werden von Supabase Auth verarbeitet und sind nicht im Haven-Code gespeichert.
+- RLS beschränkt Datenbankzugriffe auf Teilnehmer und Rollen.
+- Gesprächsinhalte stehen nicht in Push-Nachrichten oder Team-E-Mails.
+- Gäste sind gegenüber Moderatoren mit Spitznamen sichtbar, aber technisch existiert ein anonymes Auth-Konto.
+- Betreiber mit hoch privilegiertem Supabase-Zugang können technisch Datenbankdaten sehen. Deshalb darf die Website **keine absolute Unsichtbarkeits- oder Anonymitätsgarantie** behaupten.
+- Für echten Betrieb braucht es vollständiges Impressum, Datenschutzerklärung, Löschfristen, Auftragsverarbeitungsprüfung und ein Notfallkonzept.
+- Haven ist kein Notfall- oder medizinischer Dienst; dieser Hinweis muss sichtbar bleiben.
 
-Die Registrierung sendet eine Bestätigungs-E-Mail. Der Bestätigungslink verweist auf die öffentliche Haven-Adresse. Danach kehrt die Person zu Haven zurück und meldet sich mit dem gewählten Passwort an.
+## 10. Änderungen
 
-## Passwort-Wiederherstellung
+- Texte: denselben Schlüssel in `src/translations.js` unter `en`, `de` und `ar` ändern.
+- Farben/Kontrast: CSS-Variablen und betroffene Komponenten in `src/style.css` ändern.
+- Web-Verhalten: passende Funktion in `src/main.js` ändern.
+- Datenrechte: niemals nur Frontend ändern; SQL/RLS und RPC prüfen.
+- Neue Datenbankänderungen als neue `supabase/upgrade-vN-*.sql` anlegen, nicht alte Produktion blind neu ausführen.
 
-Unter dem Passwortfeld der Anmeldung befindet sich „Passwort vergessen?“. Haven sendet über Supabase eine sichere Wiederherstellungs-E-Mail. Der Link führt zurück zur öffentlichen Haven-Seite, wo ein neues Passwort zweimal eingegeben wird. Nach der Änderung wird die Sitzung beendet und die Person meldet sich mit dem neuen Passwort an.
+## 11. Test vor Veröffentlichung
 
-Haven speichert beim ersten Laden sofort, ob die URL zu einer Passwort-Wiederherstellung gehört. Dadurch bleibt der Ablauf zuverlässig, auch wenn Supabase die Token-Parameter kurz danach aus der Adresszeile entfernt. Abgelaufene oder bereits verwendete Links zeigen eine verständliche Meldung und führen direkt zur Anforderung eines neuen Links. Immer nur den neuesten Wiederherstellungslink verwenden; ein neuer Link macht ältere Links ungültig.
+```bash
+npm ci
+npm run check
+```
 
-In Supabase muss unter **Authentication → URL Configuration** die öffentliche Haven-Adresse als Site URL und erlaubte Redirect URL eingetragen sein. Passwörter, Codes und geheime Schlüssel gehören niemals in den Quellcode oder in Support-Nachrichten.
+Danach Registrierung, Bestätigungslink, Login, Gastchat, Chat-Annahme, Nachrichten in beiden Richtungen, Termin und drei Sprachen manuell testen. Die vollständige Liste steht in [`LAUNCH_CHECKLIST.md`](./LAUNCH_CHECKLIST.md).
