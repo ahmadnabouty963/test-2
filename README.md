@@ -30,3 +30,10 @@ Add the exact Vercel production address in Supabase under **Authentication → U
 The Supabase publishable browser key is intentionally public. Never commit a service-role key, Resend key, Vercel token, Apple key or Google service-account key.
 
 See `docs/LAUNCH_CHECKLIST.md` before public use.
+
+## Dokumentation
+
+- [`docs/CODE_GUIDE.md`](docs/CODE_GUIDE.md) — Architektur, Technik, Rollen, Tabellen und nahezu jede Funktion
+- [`docs/LINE_BY_LINE.md`](docs/LINE_BY_LINE.md) — zeilenweise Erklärung von Web, Mobile, SQL und Benachrichtigungsfunktion
+- [`docs/PLANNING.md`](docs/PLANNING.md) — Produktplanung
+- [`docs/LAUNCH_CHECKLIST.md`](docs/LAUNCH_CHECKLIST.md) — Prüfungen vor der Veröffentlichung
