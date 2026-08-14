@@ -34,7 +34,7 @@ create or replace function public.handle_new_user() returns trigger language plp
 begin insert into public.profiles(id,display_name) values(new.id,coalesce(nullif(new.raw_user_meta_data->>'display_name',''),'Guest')); return new; end; $$;
 create trigger on_auth_user_created after insert on auth.users for each row execute procedure public.handle_new_user();
 create or replace function private.is_moderator() returns boolean language sql stable security definer set search_path='' as $$
-  select auth.uid() is not null and exists(select 1 from public.profiles where id=(select auth.uid()) and role='moderator'); $$;
+  select auth.uid() is not null and exists(select 1 from public.profiles where id=(select auth.uid()) and role::text in ('moderator','admin')); $$;
 create or replace function private.can_access_conversation(conversation_uuid uuid) returns boolean language sql stable security definer set search_path='' as $$
   select auth.uid() is not null and exists(select 1 from public.conversations c where c.id=conversation_uuid and (c.user_id=(select auth.uid()) or c.moderator_id=(select auth.uid()) or private.is_moderator())); $$;
 create or replace function public.accept_conversation(conversation_uuid uuid) returns public.conversations language plpgsql security definer set search_path='' as $$
